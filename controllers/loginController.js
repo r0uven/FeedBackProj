@@ -1,6 +1,7 @@
 const pool = require('../dbPool');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const { findUserByEmail } = require('../models/userModel');
 
 const JWT_SECRET = process.env.JWT_SECRET;
 
@@ -8,14 +9,14 @@ const loginUser = async (req, res) => {
     const { email, password } = req.body;
   
     try {
-      // Поиск пользователя по email
-      const user = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
-  
-      if (user.rows.length === 0) {
-        return res.status(404).json({ message: 'Пользователь не найден' });
+      // Проверка на существование пользователя с таким же email
+      const existingUser = await findUserByEmail(email);
+      if (existingUser) {
+        return res.status(400).json({ message: 'Пользователь с таким email уже существует' });
       }
+
   
-      const foundUser = user.rows[0];
+      const foundUser = existingUser.rows[0];
   
       // Проверка пароля
       const validPassword = await bcrypt.compare(password, foundUser.password);
