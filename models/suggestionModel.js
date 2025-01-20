@@ -1,4 +1,3 @@
-// models/suggestionModel.js
 const pool = require('../dbPool');  // Импортируем пул соединений с базой данных
 
 // Создание предложения

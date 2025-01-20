@@ -1,4 +1,3 @@
-const pool = require('../dbPool');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { findUserByEmail, createUser } = require('../models/userModel');

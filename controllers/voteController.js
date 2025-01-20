@@ -1,4 +1,4 @@
-const pool = require('../dbPool');  // Подключение к базе данных
+const voteModel = require('../models/voteModel');
 
 // Голосование "за" предложение
 const upvote = async (req, res) => {
@@ -6,25 +6,12 @@ const upvote = async (req, res) => {
   const user_id = req.user.userId;
 
   try {
-    const checkVote = await pool.query(
-      'SELECT * FROM upvotes WHERE suggestion_id = $1 AND user_id = $2',
-      [suggestion_id, user_id]
-    );
-
-    if (checkVote.rows.length > 0) {
+    const hasVoted = await voteModel.hasVoted(suggestion_id, user_id);
+    if (hasVoted) {
       return res.status(400).json({ message: 'Вы уже голосовали за это предложение.' });
     }
 
-    await pool.query(
-      'INSERT INTO upvotes (suggestion_id, user_id) VALUES ($1, $2)',
-      [suggestion_id, user_id]
-    );
-
-    await pool.query(
-      'UPDATE suggestions SET upvotes_count = upvotes_count + 1 WHERE id = $1',
-      [suggestion_id]
-    );
-
+    await voteModel.addVote(suggestion_id, user_id);
     res.status(200).json({ message: 'Ваш голос учтен.' });
   } catch (error) {
     console.error(error);
@@ -38,25 +25,12 @@ const downvote = async (req, res) => {
   const user_id = req.user.userId;
 
   try {
-    const checkVote = await pool.query(
-      'SELECT * FROM upvotes WHERE suggestion_id = $1 AND user_id = $2',
-      [suggestion_id, user_id]
-    );
-
-    if (checkVote.rows.length === 0) {
+    const hasVoted = await voteModel.hasVoted(suggestion_id, user_id);
+    if (!hasVoted) {
       return res.status(400).json({ message: 'Вы не голосовали за это предложение.' });
     }
 
-    await pool.query(
-      'DELETE FROM upvotes WHERE suggestion_id = $1 AND user_id = $2',
-      [suggestion_id, user_id]
-    );
-
-    await pool.query(
-      'UPDATE suggestions SET upvotes_count = upvotes_count - 1 WHERE id = $1',
-      [suggestion_id]
-    );
-
+    await voteModel.removeVote(suggestion_id, user_id);
     res.status(200).json({ message: 'Ваш голос удален.' });
   } catch (error) {
     console.error(error);
@@ -64,4 +38,4 @@ const downvote = async (req, res) => {
   }
 };
 
-module.exports = { upvote, downvote}
+module.exports = { upvote, downvote };
