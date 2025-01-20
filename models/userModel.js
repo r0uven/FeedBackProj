@@ -1,6 +1,7 @@
 const pool = require('../dbPool');  // Импортируем пул соединений из отдельного файла
+const { get } = require('../routes/protectedRoutes');
 
-// Проверка на существование пользователя с данным email
+// Получить профиль пользователя с данным email
 const findUserByEmail = async (email) => {
   const query = 'SELECT * FROM users WHERE email = $1';
   const result = await pool.query(query, [email]);
@@ -17,4 +18,13 @@ const createUser = async (name, email, hashedPassword) => {
   return result.rows[0];
 };
 
-module.exports = { findUserByEmail, createUser };
+// Получить профиль пользователя по ID
+const getUserProfileById = async (userId) => {
+  const result = await pool.query(
+      'SELECT id, name, email, created_at FROM users WHERE id = $1',
+      [userId]
+  );
+  return result.rows[0];
+};
+
+module.exports = { findUserByEmail, createUser, getUserProfileById };
