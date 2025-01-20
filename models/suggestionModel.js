@@ -93,11 +93,52 @@ const deleteSuggestion = async (id) => {
     return result.rows[0];
 };
 
+const getSuggestionsWithFiltersAndSorting = async (category_id, status_id, sort_by) => {
+    let query = `SELECT s.id, s.title, s.description, s.upvotes_count, s.created_at, 
+                 c.name AS category, st.name AS status 
+                 FROM suggestions s 
+                 JOIN categories c ON s.category_id = c.id 
+                 JOIN statuses st ON s.status_id = st.id`;
+    const values = [];
+
+    // Добавляем фильтры по категориям и статусам
+    if (category_id || status_id) {
+        query += ' WHERE';
+        if (category_id) {
+            values.push(category_id);
+            query += ` s.category_id = $${values.length}`;
+        }
+        if (status_id) {
+            if (values.length > 0) query += ' AND';
+            values.push(status_id);
+            query += ` s.status_id = $${values.length}`;
+        }
+    }
+
+    // Добавляем сортировку
+    if (sort_by) {
+        if (sort_by === 'upvotes') {
+            query += ' ORDER BY s.upvotes_count DESC';
+        } else if (sort_by === 'created_at') {
+            query += ' ORDER BY s.created_at DESC';
+        }
+    } else {
+        // По умолчанию сортируем по дате создания
+        query += ' ORDER BY s.created_at DESC';
+    }
+
+    // Выполняем запрос с фильтрацией и сортировкой
+    const result = await pool.query(query, values);
+    return result.rows;
+};
+
+
 module.exports = {
     createSuggestion,
     getSuggestions,
     getSuggestionById,
     updateSuggestion,
     patchSuggestion,
-    deleteSuggestion
+    deleteSuggestion,
+    getSuggestionsWithFiltersAndSorting
 };

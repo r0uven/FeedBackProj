@@ -79,11 +79,23 @@ const deleteSuggestion = async (req, res) => {
     }
 };
 
+const getFilteredAndSortedSuggestions = async (req, res) => {
+    const { category_id, status_id, sort_by } = req.query;  // Получаем параметры из query-параметров
+
+    try {
+        const suggestions = await suggestionModel.getSuggestionsWithFiltersAndSorting(category_id, status_id, sort_by);
+        res.status(200).json(suggestions);
+    } catch (error) {
+        res.status(500).json({ message: 'Ошибка получения предложений', error: error.message });
+    }
+};
+
 module.exports = {
     createSuggestion,
     getSuggestions,
     getSuggestionById,
     updateSuggestion,
     patchSuggestion,
-    deleteSuggestion
+    deleteSuggestion,
+    getFilteredAndSortedSuggestions
 }
