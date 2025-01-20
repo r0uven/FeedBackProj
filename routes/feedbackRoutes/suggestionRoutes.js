@@ -4,10 +4,11 @@ const suggestionController = require('../../controllers/suggestionController'); 
 
 // Маршруты для предложений
 router.post('/', suggestionController.createSuggestion);  // Создать предложение
-router.get('/', suggestionController.getSuggestions);  // Получить все предложения
+//router.get('/', suggestionController.getSuggestions);  // Получить все предложения
 router.get('/:id', suggestionController.getSuggestionById);  // Получить предложение по ID
 router.put('/:id', suggestionController.updateSuggestion);  // Обновить предложение
 router.patch('/:id', suggestionController.patchSuggestion);  // Частично обновить предложение
 router.delete('/:id', suggestionController.deleteSuggestion);  // Удалить предложение
+router.get('/', suggestionController.getFilteredAndSortedSuggestions); //Получить предложения с сортировкой или фильтрацией
 
 module.exports = router;

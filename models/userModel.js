@@ -1,5 +1,4 @@
 const pool = require('../dbPool');  // Импортируем пул соединений из отдельного файла
-const { get } = require('../routes/protectedRoutes');
 
 // Получить профиль пользователя с данным email
 const findUserByEmail = async (email) => {
