@@ -6,7 +6,7 @@ const protectedRoutes = require('./routes/protectedRoutes'); // защищённ
 const suggestionRoutes = require('./routes/feedbackRoutes/suggestionRoutes'); //маршруты предложений
 const categoryRoutes = require('./routes/feedbackRoutes/categoryRoutes');
 const statusRoutes = require('./routes/feedbackRoutes/statusRoutes');
-const { findUserByEmail } = require('./models/userModel');
+const voteRoutes = require('./routes/voteRoutes')
 
 
 // Задаём порт, на котором будет работать сервер
@@ -26,7 +26,7 @@ app.use('/api/protected', protectedRoutes);           // защищённые м
 app.use('/api/suggestions', suggestionRoutes);    // маршруты для предложений
 app.use('/api/categories', categoryRoutes);
 app.use('/api/statuses', statusRoutes);
-
+app.use('/api/votes', voteRoutes);
 
 // Запуск сервера
 app.listen(PORT, () => {
